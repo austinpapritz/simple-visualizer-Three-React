@@ -7,11 +7,13 @@ export default function App(props) {
   return (
     <Canvas shadows dpr={[1, 2]} camera={{ position: [-1, 1.5, 2], fov: 25 }}>
       <spotLight position={[-4, 4, -4]} angle={0.06} penumbra={1} castShadow shadow-mapSize={[2048, 2048]} />
+      {/* Suspense handles timing of the mp3s to start at same time */}
       <Suspense fallback={null}>
-        <Track position-z={-0.25} url="/synth.mp3" />
-        <Track position-z={0} url="/snare.mp3" />
-        <Track position-z={0.25} url="/drums.mp3" />
-        <Zoom url="/drums.mp3" />
+        <Track position-z={-0.3} url="/vocals.mp3" />
+        <Track position-z={-0.1} url="/vocals2.mp3" />
+        <Track position-z={0.1} url="/bass.mp3" />
+        <Track position-z={0.3} url="/perc.mp3" />
+        <Zoom url="/vocals.mp3" />
       </Suspense>
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.025, 0]}>
         <planeGeometry />
@@ -21,11 +23,12 @@ export default function App(props) {
   )
 }
 
-function Track({ url, y = 2500, space = 1.8, width = 0.01, height = 0.05, obj = new THREE.Object3D(), ...props }) {
+function Track({ url, y = 2500, space = 2.0, width = 0.01, height = 0.09, obj = new THREE.Object3D(), ...props }) {
   const ref = useRef()
   // suspend-react is the library that r3f uses internally for useLoader. It caches promises and
   // integrates them with React suspense. You can use it as-is with or without r3f.
   const { gain, context, update, data } = suspend(() => createAudio(url), [url])
+  console.log('gain', gain)
   useEffect(() => {
     // Connect the gain node, which plays the audio
     gain.connect(context.destination)
@@ -35,7 +38,7 @@ function Track({ url, y = 2500, space = 1.8, width = 0.01, height = 0.05, obj = 
 
   useFrame((state) => {
     let avg = update()
-    // Distribute the instanced planes according to the frequency daza
+    // Distribute the instanced planes according to the frequency data
     for (let i = 0; i < data.length; i++) {
       obj.position.set(i * width * space - (data.length * width * space) / 2, data[i] / y, 0)
       obj.updateMatrix()
@@ -59,7 +62,8 @@ function Zoom({ url }) {
   const { data } = suspend(() => createAudio(url), [url])
   return useFrame((state) => {
     // Set the cameras field of view according to the frequency average
-    state.camera.fov = 25 - data.avg / 15
+    // this zooms in/out on the beat
+    state.camera.fov = 25 - data.avg / 12
     state.camera.updateProjectionMatrix()
   })
 }
@@ -68,6 +72,7 @@ async function createAudio(url) {
   // Fetch audio data and create a buffer source
   const res = await fetch(url)
   const buffer = await res.arrayBuffer()
+
   const context = new (window.AudioContext || window.webkitAudioContext)()
   const source = context.createBufferSource()
   source.buffer = await new Promise((res) => context.decodeAudioData(buffer, res))
@@ -78,7 +83,7 @@ async function createAudio(url) {
   // Create gain node and an analyser
   const gain = context.createGain()
   const analyser = context.createAnalyser()
-  analyser.fftSize = 64
+  analyser.fftSize = 32
   source.connect(analyser)
   analyser.connect(gain)
   // The data array receive the audio frequencies
