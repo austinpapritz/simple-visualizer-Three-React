@@ -17,7 +17,7 @@ export default function App(props) {
           <Track position-z={-0.3} />
           {/* <Track position-z={-0.1} url="" />
         <Track position-z={0.1} url="" />
-        <Track position-z={0.3} url="" /> */}
+      <Track position-z={0.3} url="" /> */}
           {/* <Zoom url="" /> */}
         </Suspense>
         <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.025, 0]}>
@@ -38,7 +38,6 @@ function Track({ url, y = 2500, space = 2.0, width = 0.01, height = 0.09, obj = 
   const sineLevel = new Tone.Volume(-30).toDestination()
   let waveform = new Tone.Waveform()
   Tone.Destination.connect(waveform)
-  playingSynth.current = true
 
   const sineLfo = new Tone.Tremolo({
     frequency: 0,
