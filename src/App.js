@@ -65,7 +65,6 @@ function Track({ url, y = 2500, space = 2.0, width = 0.01, height = 0.09, obj = 
 
   const { gain, context, update, data } = suspend(() => createAudio(waveformValue), [waveformValue])
   useEffect(() => {
-    Tone.start()
     // Connect the gain node, which plays the audio
     gain.connect(context.destination)
     // Disconnect it on unmount
