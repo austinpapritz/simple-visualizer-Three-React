@@ -5,28 +5,22 @@ import { suspend } from 'suspend-react'
 import * as Tone from 'tone'
 
 export default function App(props) {
-  function logData() {
-    console.log('data', data)
-  }
   return (
-    <>
-      <Canvas shadows dpr={[1, 2]} camera={{ position: [-1, 1.5, 2], fov: 25 }}>
-        <spotLight position={[-4, 4, -4]} angle={0.06} penumbra={1} castShadow shadow-mapSize={[2048, 2048]} />
-        {/* Suspense handles timing of the mp3s to start at same time */}
-        <Suspense fallback={null}>
-          <Track position-z={-0.3} />
-          {/* <Track position-z={-0.1} url="" />
+    <Canvas shadows dpr={[1, 2]} camera={{ position: [-1, 1.5, 2], fov: 25 }}>
+      <spotLight position={[-4, 4, -4]} angle={0.06} penumbra={1} castShadow shadow-mapSize={[2048, 2048]} />
+      {/* Suspense handles timing of the mp3s to start at same time */}
+      <Suspense fallback={null}>
+        <Track position-z={-0.3} />
+        {/* <Track position-z={-0.1} url="" />
         <Track position-z={0.1} url="" />
       <Track position-z={0.3} url="" /> */}
-          {/* <Zoom url="" /> */}
-        </Suspense>
-        <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.025, 0]}>
-          <planeGeometry />
-          <shadowMaterial transparent opacity={0.15} />
-        </mesh>
-      </Canvas>
-      <button onClick={() => logData()}>Log to console</button>
-    </>
+        {/* <Zoom url="" /> */}
+      </Suspense>
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.025, 0]}>
+        <planeGeometry />
+        <shadowMaterial transparent opacity={0.15} />
+      </mesh>
+    </Canvas>
   )
 }
 
